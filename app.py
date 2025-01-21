@@ -29,6 +29,36 @@ def list_users():
     # For now, we'll return the users as plain text
     return str(users)  # Eventually, replace this with a template
 
+@app.route('/add_user', methods=['GET', 'POST'])
+def add_user():
+    if request.method == 'POST':
+        user_name = request.form.get('name')
+        if user_name:
+            data_manager.add_user(user_name)
+            flash(f"User '{user_name}' added successfully!")
+            return redirect(url_for('list_users'))
+        else:
+            flash("Name is required!")
+    return render_template('add_user.html')
+
+
+@app.route('/users/<int:user_id>/add_movie', methods=['GET', 'POST'])
+def add_movie(user_id):
+    if request.method == 'POST':
+        movie_details = {
+            "name": request.form.get('name'),
+            "director": request.form.get('director'),
+            "year": request.form.get('year', type=int),
+            "rating": request.form.get('rating', type=float),
+            "poster": request.form.get('poster')  # Optional
+        }
+        if movie_details["name"]:
+            data_manager.add_movie(user_id, movie_details)
+            flash(f"Movie '{movie_details['name']}' added successfully!")
+            return redirect(url_for('list_user_movies', user_id=user_id))
+        else:
+            flash("Movie name is required!")
+    return render_template('add_movie.html', user_id=user_id)
 
 
 if __name__ == "__main__":
