@@ -1,10 +1,9 @@
-from data_manager_interface import DataManagerInterface
+from .data_manager_interface import DataManagerInterface
 from models import db, User, Movie
 
 
 class SQLiteDataManager(DataManagerInterface):
     def __init__(self, app):
-        db.init_app(app)
         self.db = db
 
 

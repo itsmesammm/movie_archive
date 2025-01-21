@@ -23,10 +23,17 @@ db.init_app(app)
 # Initialize the data manager
 data_manager = SQLiteDataManager(app)
 
+@app.route('/users')
+def list_users():
+    users = data_manager.get_all_users()
+    # For now, we'll return the users as plain text
+    return str(users)  # Eventually, replace this with a template
+
+
 
 if __name__ == "__main__":
     # comment the following block after create tables
-    with app.app_context():
-        db.create_all()
-        print("Database tables created successfully!")
+    #with app.app_context():
+    #    db.create_all()
+    #   print("Database tables created successfully!")
     app.run(debug=True)

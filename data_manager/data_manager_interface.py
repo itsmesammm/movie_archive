@@ -10,7 +10,7 @@ class DataManagerInterface(ABC):
     @abstractmethod
     def get_user_movies(self, user_id):
         """Retrieve all movies for specific user"""
-       pass
+        pass
 
     @abstractmethod
     def add_user(self, user_name):
