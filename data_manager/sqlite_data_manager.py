@@ -1,4 +1,5 @@
 from .data_manager_interface import DataManagerInterface
+from api_utils import fetch_movie_details
 from models import db, User, Movie
 import requests
 import os
@@ -49,22 +50,11 @@ class SQLiteDataManager(DataManagerInterface):
             self.db.session.commit()
 
     def fetch_movie_from_api(self, title):
-        """Fetch movie details from OMDb API by title"""
+        """
+        Fetch movie details from the OMDb API by title.
+        Note: This method leverages the `fetch_movie_details` function
+        from `api_utils.py` for modularity and reusability.
+        """
         api_key = os.getenv('OMDB_API_KEY')
-        url = f"http://www.omdbapi.com/?apikey={api_key}&t={title}"
-        response = requests.get(url)
+        return fetch_movie_details(api_key, title)
 
-        if response.status_code = 200:
-            data = response.json()
-            if data.get("Response") == "True":
-                #Extract required fields
-                return {
-                    "name": data["Title"],
-                    "director": data["Director"],
-                    "year": int(data["Year"]),
-                    "poster": data["Poster"]
-                }
-            else:
-                raise ValueError(f"Movie not found: {title}")
-        else:
-            raise ConnectionError("Failed to fetch data from OMDb API")
