@@ -23,11 +23,22 @@ db.init_app(app)
 # Initialize the data manager
 data_manager = SQLiteDataManager(app)
 
+@app.route('/')
+def home():
+    return render_template('index.html')
+
 @app.route('/users')
 def list_users():
     users = data_manager.get_all_users()
-    # For now, we'll return the users as plain text
-    return str(users)  # Eventually, replace this with a template
+    return render_template('users.html', users=users)
+@app.route('/users/<int:user_id>')
+def list_user_movies(user_id):
+    movies = data_manager.get_user_movies(user_id)
+    user = next((u for u in data_manager.get_all_users() if u['id'] == user_id), None)
+    if user:
+        return render_template('user_movies.html', user=user, movies=movies)
+    flash("User not found")
+    return redirect(url_for('list_users'))
 
 @app.route('/add_user', methods=['GET', 'POST'])
 def add_user():
@@ -52,13 +63,29 @@ def add_movie(user_id):
             "rating": request.form.get('rating', type=float),
             "poster": request.form.get('poster')  # Optional
         }
+        fetch_from_api = request.form.get('fetch_from_api') == 'on'
+        if fetch_from_api:
+            movie_details["fetch_from_api"] = True
         if movie_details["name"]:
-            data_manager.add_movie(user_id, movie_details)
-            flash(f"Movie '{movie_details['name']}' added successfully!")
+            try:
+                data_manager.add_movie(user_id, movie_details)
+                flash(f"Movie '{movie_details['name']}' added successfully!")
+            except ValueError as e:
+                flash(str(e))
             return redirect(url_for('list_user_movies', user_id=user_id))
         else:
             flash("Movie name is required!")
     return render_template('add_movie.html', user_id=user_id)
+
+@app.route('/users/<int:user_id>/update_movie/<int:movie_id>', methods=['GET', 'POST'])
+def update_movie(user_id, movie_id):
+    if request.method == 'POST':
+        updates = {
+            "name": request.form.get('name'),
+            "director": request.form.get('director'),
+            "year": request.form.get('year', type=int)
+        }
+
 
 
 if __name__ == "__main__":
