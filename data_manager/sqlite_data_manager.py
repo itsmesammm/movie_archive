@@ -14,7 +14,7 @@ class SQLiteDataManager(DataManagerInterface):
 
     def get_user_movies(self, user_id):
         return [{"id": movie.id, "name": movie.name, "director": movie.director,
-                 "year": movie.year, "rating": movie.rating}
+                 "year": movie.year, "rating": movie.rating, "poster": movie.poster}
                 for movie in Movie.query.filter_by(user_id = user_id).all()]
 
     def add_user(self, user_name):
@@ -22,20 +22,26 @@ class SQLiteDataManager(DataManagerInterface):
         self.db.session.add(new_user)
         self.db.session.commit()
 
-    def add_movie(self, user_id, movie_details):
-        if "fetch_from_api" in movie_details and movie_details["fetch_from_api"]:
-            try:
-                api_data = self.fetch_movie_from_api(movie_details["name"])
-                movie_details.update(api_data)
-            except Exception as e:
-                raise ValueError(f"Failed to add movie from API: {e}")
+    def get_user_by_id(self, user_id):
+        user = User.query.get(user_id)  # Query the user directly using SQLAlchemy
+        if user:
+            return {"id": user.id, "name": user.name}  # Return as a dictionary
+        return None
 
-        new_movie = Movie(user_id = user_id, **movie_details)
+    def add_movie(self, user_id, movie_details):
+        try:
+            api_data = self.fetch_movie_from_api(movie_details["name"])
+            movie_details.update(api_data)
+
+        except Exception as e:
+            raise # Re-raise the ValueError to be caught in app.py
+
+        new_movie = Movie(user_id=user_id, **movie_details)
         self.db.session.add(new_movie)
         self.db.session.commit()
 
     def update_movie(self, movie_id, updates):
-        movie = Movie.query.get(movie_id)
+        movie = Movie.query.get_or_404(movie_id)
         if not movie:
             return False
         for key, value in updates.items():
@@ -55,6 +61,12 @@ class SQLiteDataManager(DataManagerInterface):
         Note: This method leverages the `fetch_movie_details` function
         from `api_utils.py` for modularity and reusability.
         """
-        api_key = os.getenv('OMDB_API_KEY')
-        return fetch_movie_details(api_key, title)
+        try:
+            api_key = os.getenv('OMDB_API_KEY')
+            if not api_key:
+                raise ValueError("OMDB_API_KEY is not set in the environment variables.")
+
+            return fetch_movie_details(api_key, title)
+        except requests.exceptions.RequestException as e:
+            raise ValueError(f"Failed to fetch data from OMDb API: {e}")
 
