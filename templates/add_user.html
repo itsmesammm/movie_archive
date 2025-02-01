@@ -1,9 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Add User</title>
-</head>
+{% extends "base.html" %}  {# Inherit from base.html #}
+
+{% block title %}Add User{% endblock %}  {# Customize title #}
+
+{% block content %}  {# Start content block #}
 <body>
     <h1>Add User</h1>
     <form method="post">
@@ -13,4 +12,4 @@
     </form>
     <a href="{{ url_for('list_users') }}">Back to Users</a>
 </body>
-</html>
+{% endblock %}

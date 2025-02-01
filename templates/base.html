@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}MovieWeb App{% endblock %}</title>  {# Title block for customization #}
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet"> {# Google Font #}
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif; /* Use Nunito font */
+            margin: 0; /* Remove default margins */
+            padding: 0;
+            background-color: #f4f4f4; /* Light gray background */
+            color: #333; /* Dark gray text color */
+        }
+        .container {
+            max-width: 960px; /* Set a maximum width for the content */
+            margin: 20px auto; /* Center the content */
+            padding: 20px;
+            background-color: #fff; /* White background for content area */
+            box-shadow: 0 0 10px rgba(0,0,0,0.1); /* Subtle shadow */
+            border-radius: 8px; /* Rounded corners for container */
+        }
+        h1, h2, h3 {
+            font-weight: 700; /* Bold headings */
+        }
+        img {
+            border-radius: 8px; /* Rounded corners for images */
+            max-width: 150px; /* Set maximum image width */
+            height: auto;
+            display: block; /* Prevents image from affecting text flow */
+            margin: 10px auto; /* Center images */
+        }
+        .alert {
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid transparent;
+            border-radius: 4px;
+        }
+        .alert-danger {
+            color: #a94442;
+            background-color: #f2dede;
+            border-color: #ebccd1;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 10px;
+            background-color: #007bff; /* Blue button */
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+        }
+        nav {
+            background-color: #333; /* Dark background for navbar */
+            color: white;
+            padding: 10px;
+            text-align: center; /* Center the navigation links */
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px; /* Space between nav items */
+        }
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #333;
+            color: white;
+            margin-top: 20px; /* Space above the footer */
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="{{ url_for('home') }}">Home</a>
+        <a href="{{ url_for('list_users') }}">Users</a>
+        </nav>
+    <div class="container">
+        {% block content %}{% endblock %}  {# Content block for individual pages #}
+    </div>
+    <footer>
+        &copy; 2024 MovieWeb App
+    </footer>
+</body>

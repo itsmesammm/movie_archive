@@ -23,6 +23,18 @@ db.init_app(app)
 # Initialize the data manager
 data_manager = SQLiteDataManager(app)
 
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
+
+@app.errorhandler(500)  # Example for a 500 Internal Server Error
+def internal_server_error(e):
+    # You might want to log the error here for debugging:
+    # app.logger.error(f"Internal Server Error: {e}")  # Requires setting up logging
+
+    return render_template('500.html'), 500  # Create a 500.html template
+
 @app.route('/')
 def home():
     return render_template('index.html')
@@ -60,34 +72,37 @@ def add_user():
 @app.route('/users/<int:user_id>/add_movie', methods=['GET', 'POST'])
 def add_movie(user_id):
     movie_details = {}
+    movie_title = None # Initialize movie_title
+    rating = None # Initialize rating
 
     if request.method == 'POST':
-        movie_details = {
-            "name": request.form.get('name'),
-            "director": request.form.get('director'),
-            "year": request.form.get('year', type=int),
-            "rating": request.form.get('rating', type=float),
-            "poster": request.form.get('poster')
-        }
-        fetch_from_api = request.form.get('fetch_from_api') == 'on'
-        if fetch_from_api:
-            movie_details["fetch_from_api"] = True
+        movie_title = request.form.get('movie_title')  # Get the movie title from the form
+        rating = request.form.get('rating', type=float)  # Get the rating from the form
 
-        if movie_details["name"]:
+        if movie_title:
             try:
+                api_data = data_manager.fetch_movie_from_api(movie_title)
+
+                # Check for API errors
+                if isinstance(api_data, dict) and api_data.get('Error'):
+                    raise ValueError(api_data['Error'])
+
+                movie_details.update(api_data)
+                movie_details['rating'] = rating  # Add the rating to movie_details
+
                 data_manager.add_movie(user_id, movie_details)
                 flash(f"Movie '{movie_details['name']}' added successfully!")
                 return redirect(url_for('list_user_movies', user_id=user_id))
 
             except ValueError as e:
                 flash(str(e))
-                return render_template('add_movie.html', user_id=user_id, movie_details=movie_details, form=request.form)
+                return render_template('add_movie.html', user_id=user_id, movie_details=movie_details, movie_title=movie_title, rating=rating)
 
         else:
             flash("Movie title is required!")
-            return render_template('add_movie.html', user_id=user_id, movie_details=movie_details, form=request.form)  # Return here!
+            return render_template('add_movie.html', user_id=user_id, movie_details=movie_details, movie_title=movie_title, rating=rating)
 
-    return render_template('add_movie.html', user_id=user_id, movie_details=movie_details)  # Return for GET requests
+    return render_template('add_movie.html', user_id=user_id, movie_details=movie_details, movie_title=movie_title, rating=rating)
 
 @app.route('/users/<int:user_id>/update_movie/<int:movie_id>', methods=['GET', 'POST'])
 def update_movie(user_id, movie_id):

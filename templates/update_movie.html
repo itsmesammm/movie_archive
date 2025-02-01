@@ -1,9 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Update Movie</title>
-</head>
+{% extends "base.html" %}  {# Inherit from base.html #}
+
+{% block title %}Update Movie{% endblock %}
+
+{% block content %}  {# Start content block #}
 <body>
     <h1>Update Movie</h1>
     <form method="post">
@@ -28,4 +27,4 @@
 
     <a href="{{ url_for('list_user_movies', user_id=movie.user_id) }}">Back to Movies</a>
 </body>
-</html>
+{% endblock %}

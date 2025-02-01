@@ -1,0 +1,11 @@
+{% extends "base.html" %}  {# Inherit from base.html #}
+
+{% block title %}Page Not Found{% endblock %}
+
+{% block content %}  {# Start content block #}
+<body>
+    <h1>Oops! Something went wrong.</h1>
+    <p>An internal server error has occurred. Please try again later.</p>
+    <a href="{{ url_for('home') }}">Go Home</a>
+</body>
+{% endblock %}

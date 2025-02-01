@@ -1,0 +1,19 @@
+{% extends "base.html" %}  {# Inherit from base.html #}
+
+{% block title %}Page Not Found{% endblock %}
+
+{% block content %}  {# Start content block #}
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>404: Page Not Found</title>
+</head>
+<body>
+    <h1>Oops! Page Not Found</h1>
+    <p>The page you are looking for does not exist.</p>
+    <a href="{{ url_for('home') }}">Go Home</a>  </body>
+</body>
+{% endblock %}
